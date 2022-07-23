@@ -1,6 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
 def plotting_ACC(labels, sensor):
@@ -74,21 +75,36 @@ def show_values(axs, orient="v", space=.01):
     else:
         _single(axs)
 
+def evaluate(window_size, overlap, sampling_rate, feature_set, training_participants, testing_participants):
+    segments = withoutLabelDF.rolling(window=window_size, center=True, min_periods=window_size).agg(
+        ['min', 'max', 'sum', 'mean', 'std'])
+    segments.columns = ['-'.join(tup).rstrip('-') for tup in segments.columns.values]
+    segments = pd.concat([withoutTS.iloc[:, -1], segments], axis=1)
+    segments = segments.dropna()
+    segments = segments[::(int)(window_size * overlap)]
+    return segments
+    # do preprocessing, segmentation, classification for this configuration
+    print("classification accuracy = x %")
+    # for each activity print recall, precision, Fl Score
+    # ideally, store all the information for this configuration to a csv file
+    # which is better for a Later evaluation
+
+
 def evaluate(window, overlap, sampling_rate, feature_set, training_participants, testing_participants):
     # do preprocessing, segmentation, classification for this configuration
     print("classification accuracy = x %")
     # for each activity print recall, precision, Fl Score
     # ideally, store all the information for this configuration to a csv file
     # which is better for a Later evaluation
-    window_sizes = [0.2, 0.4, 0.5, 0.7, 0.9, 1.0]
-    overlaps = [0, 0.25, 0.5, 0.75, 0.9, 'max']
-    sampling_rates = [5, 10, 25, 35]
-    feature_sets = [["mean", "std"], ["mean", "std", "slope", "energy"]]
-    training_participants = ["p_1", "p_2"]
-    testing_participants = ["p_3", "p_4"]
+window_sizes = [0.2, 0.4, 0.5, 0.7, 0.9, 1.0]
+overlaps = [0, 0.25, 0.5, 0.75, 0.9, 'max']
+sampling_rates = [5, 10, 25, 35]
+feature_sets = [["mean", "std"], ["mean", "std", "slope", "energy"]]
+training_participants = ["p_1", "p_2"]
+testing_participants = ["p_3", "p_4"]
 
-    for window in window_sizes:
-        for overlap in overlaps:
-            for sampling_rate in sampling_rates:
-                for feature_set in feature_sets:
-                    evaluate(window, overlap, sampling_rate, feature_set, training_participants, testing_participants)
+for window in window_sizes:
+    for overlap in overlaps:
+        for sampling_rate in sampling_rates:
+            for feature_set in feature_sets:
+                evaluate(window, overlap, sampling_rate, feature_set, training_participants, testing_participants)
