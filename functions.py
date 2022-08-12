@@ -89,7 +89,6 @@ def evaluate(window_size, overlap, sampling_rate, feature_set, training_particip
     # ideally, store all the information for this configuration to a csv file
     # which is better for a Later evaluation
 
-
 def evaluate(window, overlap, sampling_rate, feature_set, training_participants, testing_participants):
     # do preprocessing, segmentation, classification for this configuration
     print("classification accuracy = x %")
